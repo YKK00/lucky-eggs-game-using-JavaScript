@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lucky eggs</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <div id="mask">
+  </div>
+  <h1>LUCKY EGGS</h1>
+  <div class="wrap flex flx-cen">
+    <ul class="flex flx-bet">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  <script>
+
+
+    function idxElem(Elem) {
+      var parentNode = Elem.parentNode;
+      for (var i = 0, len = parentNode.children.length; i < len; i++) {
+        if (parentNode.children[i] === Elem) {
+          return i;
+        }
+      }
+    }
+
+
+    //generate a random color
+    function randColor() {
+      var str = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e'];
+      function randHex() {
+        return Math.floor(Math.random() * 15);
+      }
+      var randCol = '#';
+      for (var i = 0; i < 6; i++) {
+        randCol += str[randHex()];
+      }
+      return randCol;
+    }
+
+
+
+
+    var aLi = document.querySelectorAll('li');
+
+    for (var i = 0; i < aLi.length; i++) {
+      aLi[i].innerText = 'click me?';
+    }
+
+
+
+    function prizeGener() {
+      var ranNum;
+      var prize = [];
+      for (var i = 0, len = aLi.length; i < len; i++) {
+        prize[i] = 'NO PRIZE';
+      }
+      for (var i = 0, len = Math.floor(aLi.length * chance); i < len; i++) {
+        ranNum = Math.floor(Math.random() * aLi.length);
+        //to prevent the prize in the same place be settled twice
+        if (prize[ranNum] === 'PRIZE') {
+          i--;
+        }
+        else {
+          prize[ranNum] = 'PRIZE';
+        }
+      }
+      return prize;
+    }
+
+
+    var numClick = 0;
+
+    var ranChance = function () {
+      return 0.2 + Math.random() * 0.6;
+    }
+    var chance = ranChance();
+    //prices in array
+    var prize = prizeGener();
+    console.log(chance);
+
+
+    var oMask = document.getElementById('mask');
+    oMask.style.display = 'none';
+
+
+    //change the arrtibutes of the eggs
+    var eggClick = function () {
+      console.log(prize + chance);
+      this.innerText = `You have clicked
+        the egg${idxElem(this) + 1}!
+        ${prize[idxElem(this)]} `;
+      numClick++;
+      this.style.backgroundColor = randColor();
+      this.onclick = null;
+      if (numClick === aLi.length) {
+        maskEggs();
+      }
+      console.log('chance' + chance);
+
+    }
+
+    //mask to show that you have finished clicking
+    function maskEggs() {
+      oMask.style.display = 'block';
+      oMask.innerHTML = `You have clicked ${aLi.length} eggs! You will have ${Math.floor(aLi.length * chance)} prizes!
+          <a>CLICK AGAIN</a>`
+      var oAMask = oMask.querySelector('a');
+      oAMask.style.color = 'tomato';
+      oAMask.style.display = 'block';
+      oAMask.style.marginTop = '100px';
+      oAMask.onmouseleave = function () {
+        oAMask.style.textDecoration = 'none';
+      }
+      oAMask.onmouseover = function () {
+        oAMask.style.textDecoration = 'underline';
+        oAMask.style.cursor = 'pointer';
+      }
+      oAMask.onclick = function () {
+        oMask.style.display = 'none';
+        for (var i = 0, len = aLi.length; i < len; i++) {
+          eggReset(aLi[i]);
+        }
+      }
+    }
+
+    //reset the attributes of a single egg
+    function eggReset(egg) {
+      //reset click time
+      numClick = 0;
+      //reset chance
+      chance = ranChance();
+      //reset prize array
+      prize = prizeGener();
+      egg.style.backgroundColor = '#FF9A65';
+      egg.innerText = 'click me?';
+      egg.onclick = eggClick;
+    }
+
+
+    for (var i = 0, len = aLi.length; i < len; i++) {
+      aLi[i].onmouseover = function () {
+        this.style.width = '120px';
+        this.style.height = '180px';
+      }
+
+      aLi[i].onmouseout = function () {
+        this.style.width = '100px';
+        this.style.height = '150px';
+      }
+
+      // console.log(aLi[0]);
+      aLi[i].onclick = eggClick;
+    }
+
+
+  </script>
+</body>
+
+</html>
